@@ -9,7 +9,8 @@
 #define OUTPUT "output.txt"
 #define FORMULA "formula.txt"
 
-#define SIZE 3    //9x9
+#define SIZE 9    //9x9
+
 
 int main(void) {
 
