@@ -30,9 +30,10 @@ int main(void) {
 	//Transfrom the input.txt to fomula.txt
 	int i, j, n;
 	char temp;
-	int arr_size = 0, star_size = 0;
+	int arr_size = 0, star_size = 0, hash_size = 0;
 	int arr[SIZE*SIZE];
 	int star[SIZE];
+	int hash[SIZE];
 	//Scan input.txt file
 	for (i = 0; i < SIZE*SIZE; i++) {
 		fscanf(fpin, " %c", &temp);
@@ -42,6 +43,8 @@ int main(void) {
 			star[star_size++] = (i*SIZE) + 1;
 		else if ('1' <= temp && temp <= SIZE + '0')
 			arr[arr_size++] = (i * SIZE) + temp - '0';
+		else if (temp == '#')
+			hash[hash_size++] = (i*SIZE) + 1;
 		else {
 			printf("Input file is invalid.\n");
 			return -1;
@@ -49,18 +52,10 @@ int main(void) {
 	}
 
 
-	if (star_size < 2) {
-		if (SIZE == 3)
-			fprintf(fpfor, "p cnf %d %d\n", SIZE*SIZE*SIZE, SIZE*SIZE * 2 + ((SIZE*(SIZE - 1)) / 2)*(SIZE * SIZE) + SIZE*SIZE + arr_size); //1.( SIZE * SIZE ) + 2.( SIZE * SIZE ) + 3.( (C(SIZE,2)+1)*SIZE*SIZE ) + arr_size
-		else if (SIZE == 9)
-			fprintf(fpfor, "p cnf %d %d\n", SIZE*SIZE*SIZE, SIZE*SIZE * 2 + ((SIZE*(SIZE - 1)) / 2)*(SIZE * SIZE) + SIZE*SIZE + SIZE*SIZE + arr_size); // 4. (SIZE * SIZE)
-	}
-	else {
-		if (SIZE == 3)
-			fprintf(fpfor, "p cnf %d %d\n", SIZE*SIZE*SIZE, SIZE*SIZE * 2 + ((SIZE*(SIZE - 1)) / 2)*(SIZE * SIZE) + SIZE*SIZE + arr_size + 2 * SIZE*(star_size - 1)); //1.( SIZE * SIZE ) + 2.( SIZE * SIZE ) + 3.( (C(SIZE,2)+1)*SIZE*SIZE ) + arr_size + asterisk
-		else if (SIZE == 9)
-			fprintf(fpfor, "p cnf %d %d\n", SIZE*SIZE*SIZE, SIZE*SIZE * 2 + ((SIZE*(SIZE - 1)) / 2)*(SIZE * SIZE) + SIZE*SIZE + SIZE*SIZE + arr_size + 2 * SIZE*(star_size - 1)); // 4. (SIZE * SIZE) 
-	}
+	if (SIZE == 3)
+		fprintf(fpfor, "p cnf %d %d\n", SIZE*SIZE*SIZE, SIZE*SIZE * 2 + ((SIZE*(SIZE - 1)) / 2)*(SIZE * SIZE) + SIZE*SIZE + arr_size + (int)(star_size * (star_size - 1)*SIZE*(0.5)) + (int)(hash_size * (hash_size-1)*SIZE*(0.5))); //1.( SIZE * SIZE ) + 2.( SIZE * SIZE ) + 3.( (C(SIZE,2)+1)*SIZE*SIZE ) + arr_size + asterisk + hash
+	else if (SIZE == 9)
+		fprintf(fpfor, "p cnf %d %d\n", SIZE*SIZE*SIZE, SIZE*SIZE * 2 + ((SIZE*(SIZE - 1)) / 2)*(SIZE * SIZE) + SIZE*SIZE + SIZE*SIZE + arr_size + (int)(star_size * (star_size - 1)*SIZE*(0.5)) + (int)(hash_size * (hash_size - 1)*SIZE*(0.5))); // 4. (SIZE * SIZE) 
 
 	//Conditions that should be originally checked
 
@@ -127,9 +122,20 @@ int main(void) {
 
 	//Check asterisk.
 	for (i = 0; i < star_size - 1; i++) {
-		for (j = 0; j < SIZE; j++) {
-			fprintf(fpfor, "-%d %d 0\n", star[i] + j, star[i + 1] + j);
-			fprintf(fpfor, "%d -%d 0\n", star[i] + j, star[i + 1] + j);
+		for (j = i + 1; j < star_size; j++) {
+			for (m = 0; m < SIZE; m++) {
+				fprintf(fpfor, "-%d %d 0\n", star[i] + m, star[j] + m);
+			}
+		}
+	}
+
+
+	//Check Hash.(The hash is another number each other.)
+	for (i = 0; i < hash_size - 1; i++) {
+		for (j = i + 1; j < hash_size; j++) {
+			for (m = 0; m < SIZE; m++) {
+				fprintf(fpfor, "-%d -%d 0\n", hash[i]+m, hash[j]+m);
+			}
 		}
 	}
 
