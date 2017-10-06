@@ -53,9 +53,9 @@ int main(void) {
 
 
 	if (SIZE == 3)
-		fprintf(fpfor, "p cnf %d %d\n", SIZE*SIZE*SIZE, SIZE*SIZE * 2 + ((SIZE*(SIZE - 1)) / 2)*(SIZE * SIZE) + SIZE*SIZE + arr_size + (int)(star_size * (star_size - 1)*SIZE*(0.5)) + (int)(hash_size * (hash_size-1)*SIZE*(0.5))); //1.( SIZE * SIZE ) + 2.( SIZE * SIZE ) + 3.( (C(SIZE,2)+1)*SIZE*SIZE ) + arr_size + asterisk + hash
+		fprintf(fpfor, "p cnf %d %d\n", SIZE*SIZE*SIZE, SIZE*SIZE * 2 + ((SIZE*(SIZE - 1)) / 2)*(SIZE * SIZE) + SIZE*SIZE + arr_size + star_size > 1 ? star_size-1 : 0 + (int)(hash_size * (hash_size-1)*SIZE*(0.5))); //1.( SIZE * SIZE ) + 2.( SIZE * SIZE ) + 3.( (C(SIZE,2)+1)*SIZE*SIZE ) + arr_size + asterisk + hash
 	else if (SIZE == 9)
-		fprintf(fpfor, "p cnf %d %d\n", SIZE*SIZE*SIZE, SIZE*SIZE * 2 + ((SIZE*(SIZE - 1)) / 2)*(SIZE * SIZE) + SIZE*SIZE + SIZE*SIZE + arr_size + (int)(star_size * (star_size - 1)*SIZE*(0.5)) + (int)(hash_size * (hash_size - 1)*SIZE*(0.5))); // 4. (SIZE * SIZE) 
+		fprintf(fpfor, "p cnf %d %d\n", SIZE*SIZE*SIZE, SIZE*SIZE * 2 + ((SIZE*(SIZE - 1)) / 2)*(SIZE * SIZE) + SIZE*SIZE + SIZE*SIZE + arr_size + star_size > 1 ? star_size - 1 : 0 + (int)(hash_size * (hash_size - 1)*SIZE*(0.5))); // 4. (SIZE * SIZE) 
 
 	//Conditions that should be originally checked
 
@@ -122,11 +122,9 @@ int main(void) {
 
 	//Check asterisk.
 	for (i = 0; i < star_size - 1; i++) {
-		for (j = i + 1; j < star_size; j++) {
 			for (m = 0; m < SIZE; m++) {
-				fprintf(fpfor, "-%d %d 0\n", star[i] + m, star[j] + m);
+				fprintf(fpfor, "-%d %d 0\n", star[i] + m, star[i + 1] + m);
 			}
-		}
 	}
 
 
